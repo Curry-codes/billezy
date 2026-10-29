@@ -1,0 +1,29 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "products": {
+      ".indexOn": ["tagId", "tagUID"],
+      ".read": true,
+      ".write": "auth != null && auth.token.role === 'admin'"
+    },
+    "orders": {
+      ".read": "auth != null && (auth.token.role === 'admin' || auth.token.role === 'staff')",
+      "$orderId": {
+        ".read": "auth != null && data.child('uid').val() === auth.uid",
+        ".write": false
+      }
+    },
+    "users": {
+      ".read": false,
+      ".write": false
+    },
+    "scannedItems": {
+      ".read": "auth != null",
+      "$scanId": {
+        ".write": "auth != null && (auth.token.role === 'admin' || auth.token.role === 'staff')",
+        ".validate": "newData.hasChildren(['tagId']) && newData.child('tagId').isString() && newData.child('tagId').val().length <= 128"
+      }
+    }
+  }
+}
